@@ -31,6 +31,8 @@ def main():
     # Drawing canvas
     canvas = pygame.Surface(screen.get_size())
     canvas = canvas.convert()
+    canvas.fill(bgcolor)
+    screen.blit(canvas, (0,0))
 
     # Text object
     font = pygame.font.Font(None, 36)
@@ -49,18 +51,22 @@ def main():
                 elif event.type == pygame.KEYDOWN:
                     parse_key(event.key)
 
+            # Capture dirty portion of screen
+            dirty = canvas.subsurface(text.get_rect())
+            screen.blit(dirty, (textpos[0], textpos[1]+y))
+
             # do calculations
             y += dir
             if y == 0 or y == height-1: dir *= -1
 
             # draw entities
-            canvas.fill(bgcolor)
-            pygame.draw.line(canvas, linecolor, (0, y), (width-1, y))
-            canvas.blit(text, (textpos[0],textpos[1]+y))
+            #pygame.draw.line(canvas, linecolor, (0, y), (width-1, y))
+            screen.blit(text, (textpos[0],textpos[1]+y))
 
             # flip to display
-            screen.blit(canvas, (0,0))
-            pygame.display.flip()
+            #screen.blit(dirty, textpos[0], textpos[1]+y)
+            #screen.blit(canvas, (0,0))
+            pygame.display.update([dirty.get_rect()])
             #pygame.display.update(dirty_rects)
 
         except KeyboardInterrupt:
