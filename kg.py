@@ -17,9 +17,9 @@ def main():
     pygame.init()
     clock = pygame.time.Clock()
 
-    fps = 160
+    fps = 30
     y = 0
-    dir = 1
+    dir = 3
     running = 1
     linecolor = 255, 0, 0
     bgcolor = 250,250,250
@@ -27,6 +27,10 @@ def main():
 
     # Set full-screen display
     screen, width, height = init_screen()
+
+    # Load images
+    background = pygame.image.load("bg.jpg")
+    background = background.convert()
 
     # Drawing canvas
     canvas = pygame.Surface(screen.get_size())
@@ -57,7 +61,8 @@ def main():
 
             # do calculations
             y += dir
-            if y == 0 or y == height-1: dir *= -1
+            if y == 0 or y >= height-1: dir *= -1
+            print width, height, y
 
             # draw entities
             #pygame.draw.line(canvas, linecolor, (0, y), (width-1, y))
@@ -66,7 +71,7 @@ def main():
             # flip to display
             #screen.blit(dirty, textpos[0], textpos[1]+y)
             #screen.blit(canvas, (0,0))
-            pygame.display.update([dirty.get_rect()])
+            pygame.display.update(dirty.get_rect())
             #pygame.display.update(dirty_rects)
 
         except KeyboardInterrupt:
