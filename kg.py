@@ -15,35 +15,28 @@ def init_screen():
 
 def main():
     pygame.init()
-
     clock = pygame.time.Clock()
-    fps = 30
+
+    fps = 160
     y = 0
     dir = 1
     running = 1
+    linecolor = 255, 0, 0
+    bgcolor = 250,250,250
+    dirty_rects = []
 
+    # Set full-screen display
     screen, width, height = init_screen()
 
-    # Fill background
-    background = pygame.Surface(screen.get_size())
-    background = background.convert()
-    background.fill((250,250,250))
+    # Drawing canvas
+    canvas = pygame.Surface(screen.get_size())
+    canvas = canvas.convert()
 
-    # Display some text
+    # Text object
     font = pygame.font.Font(None, 36)
     text = font.render("Hello world!", 1, (10, 10, 10))
     textpos = text.get_rect()
-    textpos.centerx = background.get_rect().centerx
-    background.blit(text, textpos)
-
-    # Blit everything to the screen
-    screen.blit(background, (0,0))
-    pygame.display.flip()
-
-
-    linecolor = 255, 0, 0
-    bgcolor = 250,250,250
-    #pygame.draw.line(screen, (0, 0, 255), (0, 0), (200, 100))
+    textpos.centerx = canvas.get_rect().centerx
 
     # Event loop
     while not stop_event.isSet():
@@ -56,18 +49,20 @@ def main():
                 elif event.type == pygame.KEYDOWN:
                     parse_key(event.key)
 
-
-            #screen.fill(bgcolor)
-            pygame.draw.line(background, bgcolor, (0, y), (width-1, y))
-
+            # do calculations
             y += dir
             if y == 0 or y == height-1: dir *= -1
-            pygame.draw.line(background, linecolor, (0, y), (width-1, y))
-            screen.blit(background, (0,0))
 
+            # draw entities
+            canvas.fill(bgcolor)
+            pygame.draw.line(canvas, linecolor, (0, y), (width-1, y))
+            canvas.blit(text, (textpos[0],textpos[1]+y))
+
+            # flip to display
+            screen.blit(canvas, (0,0))
             pygame.display.flip()
-            #screen.blit(background, (0,0))
-            #pygame.display.flip()
+            #pygame.display.update(dirty_rects)
+
         except KeyboardInterrupt:
             stop_event.set()
     pygame.quit()
