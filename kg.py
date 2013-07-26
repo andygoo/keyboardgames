@@ -1,9 +1,27 @@
 #!/usr/bin/env python
 
+import random
 import threading
 import pygame
 
 stop_event = threading.Event()
+font = None
+lettercolor = 255, 0, 0
+
+
+class letter:
+
+    def __init__(self, character, canvas):
+        pygame.init()
+        font = pygame.font.Font(None, 1000)
+
+        self.char = character
+        self.l = font.render(self.char, 1, lettercolor)
+        textpos = self.l.get_rect()
+        textpos.centerx = canvas.get_rect().centerx
+        textpos.centery = canvas.get_rect().centery
+        self.x = textpos[0]
+        self.y = textpos[1]
 
 
 def init_screen():
@@ -18,10 +36,6 @@ def main():
     clock = pygame.time.Clock()
 
     fps = 30
-    y = 0
-    dir = 3
-    running = 1
-    linecolor = 255, 0, 0
     bgcolor = 250,250,250
     dirty_rects = []
 
@@ -39,11 +53,14 @@ def main():
     screen.blit(canvas, (0,0))
 
     # Text object
-    font = pygame.font.Font(None, 36)
-    text = font.render("Hello world!", 1, (10, 10, 10))
-    textpos = text.get_rect()
-    textpos.centerx = canvas.get_rect().centerx
+    font = pygame.font.Font(None, 1000)
+    ltrs = {}
+    characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    for i in list(characters):
+        ltrs[i] = letter(i, canvas)
 
+    random_ltr = ltrs[characters[random.randint(0,25)]]
+    
     # Event loop
     while not stop_event.isSet():
         tick = clock.tick(fps)
@@ -53,30 +70,40 @@ def main():
                     stop_event.set()
                     print "pygame.QUIT" + stop_event.isSet()
                 elif event.type == pygame.KEYDOWN:
-                    parse_key(event.key)
+                    keypress = parse_key(event.key)
+                    if keypress:
+                        new_ltr = manage_keypress(keypress, random_ltr.char)
+                        if new_ltr:
+                            newrandomletter = random.randint(0,25)
+                            print newrandomletter
+                            random_ltr = ltrs[characters[newrandomletter]]
+        
 
             # Capture dirty portion of screen
-            dirty = canvas.subsurface(text.get_rect())
-            screen.blit(dirty, (textpos[0], textpos[1]+y))
-
-            # do calculations
-            y += dir
-            if y == 0 or y >= height-1: dir *= -1
-            print width, height, y
+            dirty = canvas.subsurface(random_ltr.l.get_rect())
+            screen.blit(dirty, (random_ltr.x, random_ltr.y))
 
             # draw entities
-            #pygame.draw.line(canvas, linecolor, (0, y), (width-1, y))
-            screen.blit(text, (textpos[0],textpos[1]+y))
+            screen.blit(background, (0,0))
+            screen.blit(random_ltr.l, (random_ltr.x,random_ltr.y))
 
             # flip to display
-            #screen.blit(dirty, textpos[0], textpos[1]+y)
-            #screen.blit(canvas, (0,0))
             pygame.display.update(dirty.get_rect())
-            #pygame.display.update(dirty_rects)
 
         except KeyboardInterrupt:
             stop_event.set()
     pygame.quit()
+
+
+def manage_keypress(keypress, letter_on_screen):
+    """ determine whether the key pressed matches the screen """
+    if keypress==letter_on_screen:
+        # play "you did it! You chose Y!" and choose another char
+        return True
+    else:
+        # play "That's an X" or "you chose X"
+        # play "find the Y"
+        return False
 
 
 def parse_key(key):
@@ -86,6 +113,34 @@ def parse_key(key):
             pressed[pygame.K_c]:
         stop_event.set()
 
+    if (pressed[pygame.K_a]): return "A"
+    if (pressed[pygame.K_b]): return "B"
+    if (pressed[pygame.K_c]): return "C"
+    if (pressed[pygame.K_d]): return "D"
+    if (pressed[pygame.K_e]): return "E"
+    if (pressed[pygame.K_f]): return "F"
+    if (pressed[pygame.K_g]): return "G"
+    if (pressed[pygame.K_h]): return "H"
+    if (pressed[pygame.K_i]): return "I"
+    if (pressed[pygame.K_j]): return "J"
+    if (pressed[pygame.K_k]): return "K"
+    if (pressed[pygame.K_l]): return "L"
+    if (pressed[pygame.K_m]): return "M"
+    if (pressed[pygame.K_n]): return "N"
+    if (pressed[pygame.K_o]): return "O"
+    if (pressed[pygame.K_p]): return "P"
+    if (pressed[pygame.K_q]): return "Q"
+    if (pressed[pygame.K_r]): return "R"
+    if (pressed[pygame.K_s]): return "S"
+    if (pressed[pygame.K_t]): return "T"
+    if (pressed[pygame.K_u]): return "U"
+    if (pressed[pygame.K_v]): return "V"
+    if (pressed[pygame.K_w]): return "W"
+    if (pressed[pygame.K_x]): return "X"
+    if (pressed[pygame.K_y]): return "Y"
+    if (pressed[pygame.K_z]): return "Z"
+
+    return None
 
 if __name__=='__main__':
     main()
