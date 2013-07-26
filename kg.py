@@ -7,21 +7,31 @@ import pygame
 stop_event = threading.Event()
 font = None
 lettercolor = 255, 0, 0
+characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+ltrs = {}
 
 
 class letter:
 
     def __init__(self, character, canvas):
         pygame.init()
-        font = pygame.font.Font(None, 1000)
-
+        self.fontsize = 10
         self.char = character
-        self.l = font.render(self.char, 1, lettercolor)
+        self.canvas = canvas
+
+    def update(self):
+        if self.fontsize < 1000:
+            self.fontsize = int(self.fontsize*1.15)
+        self.font = pygame.font.Font(None, self.fontsize)
+        self.l = self.font.render(self.char, 1, lettercolor)
         textpos = self.l.get_rect()
-        textpos.centerx = canvas.get_rect().centerx
-        textpos.centery = canvas.get_rect().centery
+        textpos.centerx = self.canvas.get_rect().centerx
+        textpos.centery = self.canvas.get_rect().centery
         self.x = textpos[0]
         self.y = textpos[1]
+
+    def reset(self):
+        self.fontsize = 10
 
 
 def init_screen():
@@ -52,14 +62,10 @@ def main():
     canvas.fill(bgcolor)
     screen.blit(canvas, (0,0))
 
-    # Text object
-    font = pygame.font.Font(None, 1000)
-    ltrs = {}
-    characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    # Define all the letter objects
     for i in list(characters):
         ltrs[i] = letter(i, canvas)
-
-    random_ltr = ltrs[characters[random.randint(0,25)]]
+    random_ltr = pick_random_char()
     
     # Event loop
     while not stop_event.isSet():
@@ -74,10 +80,11 @@ def main():
                     if keypress:
                         new_ltr = manage_keypress(keypress, random_ltr.char)
                         if new_ltr:
-                            newrandomletter = random.randint(0,25)
-                            print newrandomletter
-                            random_ltr = ltrs[characters[newrandomletter]]
-        
+                            random_ltr.reset()
+                            random_ltr = pick_random_char(random_ltr.char)
+       
+            # Do animations
+            random_ltr.update() 
 
             # Capture dirty portion of screen
             dirty = canvas.subsurface(random_ltr.l.get_rect())
@@ -93,6 +100,16 @@ def main():
         except KeyboardInterrupt:
             stop_event.set()
     pygame.quit()
+
+
+def pick_random_char(lastchar=None):
+    """ Ensures the same letter is not picked twice in a row """
+    newrandomletter = random.randint(0,25)
+    if lastchar:
+        while list(characters)[newrandomletter] == lastchar:
+            newrandomletter = random.randint(0,25)
+    random_ltr = ltrs[list(characters)[newrandomletter]]
+    return random_ltr
 
 
 def manage_keypress(keypress, letter_on_screen):
