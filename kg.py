@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os,sys
 import random
 import threading
 import pygame
@@ -75,10 +76,22 @@ def main():
     pygame.mixer.music.play(-1)
 
     # Load sounds
-    right = pygame.mixer.Sound(os.path.join("sounds/right","filename"))
-    wrong = pygame.mixer.Sound(os.path.join("sounds/wrong","filename"))
-    instructions = pygame.mixer.Sound(os.path.join("sounds/instructions",""))
-    instructions.play()
+    s_right = []
+    s_wrong = []
+    s_instr = []
+    soundsdir = os.path.join(os.path.dirname(__file__), "sounds")
+    for fname in os.listdir(os.path.join(soundsdir, "right")):
+        if fname.endswith(".wav"):
+            s_right.append(pygame.mixer.Sound(fname))
+    for fname in os.listdir(os.path.join(soundsdir, "wrong")):
+        if fname.endswith(".wav"):
+            s_wrong.append(pygame.mixer.Sound(fname))
+    for fname in os.listdir(os.path.join(soundsdir, "instructions")):
+        if fname.endswith(".wav"):
+            s_instr.append(pygame.mixer.Sound(fname))
+
+    
+    random.choice(instr).play()
     
     # Event loop
     while not stop_event.isSet():
@@ -95,9 +108,9 @@ def main():
                         if new_ltr: # CORRECT
                             random_ltr.reset()
                             random_ltr = pick_random_char(random_ltr.char)
-                            right.play()
+                            random.choice(s_right).play()
                         else:
-                            wrong.play()
+                            random.choice(s_wrong).play()
        
             # Do animations
             random_ltr.update() 
