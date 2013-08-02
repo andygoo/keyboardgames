@@ -73,7 +73,7 @@ def main():
     # Start Music Playing
     pygame.mixer.music.load("bg.wav")
     pygame.mixer.music.set_volume(0.5) # value: 0.0 - 1.0
-    pygame.mixer.music.play(-1)
+    #pygame.mixer.music.play(-1)
 
     # Load sounds
     s_right = []
@@ -81,17 +81,20 @@ def main():
     s_instr = []
     soundsdir = os.path.join(os.path.dirname(__file__), "sounds")
     for fname in os.listdir(os.path.join(soundsdir, "right")):
-        if fname.endswith(".wav"):
-            s_right.append(pygame.mixer.Sound(fname))
+        if fname.endswith(".ogg"):
+            s_right.append(pygame.mixer.Sound(
+                    os.path.join(soundsdir,"right/"+fname)))
     for fname in os.listdir(os.path.join(soundsdir, "wrong")):
         if fname.endswith(".wav"):
-            s_wrong.append(pygame.mixer.Sound(fname))
+            s_wrong.append(pygame.mixer.Sound(
+                    os.path.join(soundsdir,"wrong/"+fname)))
     for fname in os.listdir(os.path.join(soundsdir, "instructions")):
         if fname.endswith(".wav"):
-            s_instr.append(pygame.mixer.Sound(fname))
+            s_instr.append(pygame.mixer.Sound(
+                    os.path.join(soundsdir,"instructions/"+fname)))
 
-    
-    random.choice(instr).play()
+    if len(s_instr) > 0:    
+        random.choice(s_instr).play()
     
     # Event loop
     while not stop_event.isSet():
@@ -108,9 +111,13 @@ def main():
                         if new_ltr: # CORRECT
                             random_ltr.reset()
                             random_ltr = pick_random_char(random_ltr.char)
-                            random.choice(s_right).play()
+                            if len(s_right) > 0:
+                                s_r = random.choice(s_right)
+                                s_r.set_volume(0.8)
+                                s_r.play()
                         else:
-                            random.choice(s_wrong).play()
+                            if len(s_wrong) > 0:
+                                random.choice(s_wrong).play()
        
             # Do animations
             random_ltr.update() 
