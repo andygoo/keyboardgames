@@ -42,8 +42,10 @@ def init_screen():
 
 
 def main():
+    pygame.mixer.pre_init(44100, -16, 2, 2048) # setup mixer to avoid sound lag
     pygame.init()
     clock = pygame.time.Clock()
+    pygame.mixer.init()
 
     fps = 30
     bgcolor = 250,250,250
@@ -66,6 +68,17 @@ def main():
     for i in list(characters):
         ltrs[i] = letter(i, canvas)
     random_ltr = pick_random_char()
+
+    # Start Music Playing
+    pygame.mixer.music.load("bg.wav")
+    pygame.mixer.music.set_volume(0.5) # value: 0.0 - 1.0
+    pygame.mixer.music.play(-1)
+
+    # Load sounds
+    right = pygame.mixer.Sound(os.path.join("sounds/right","filename"))
+    wrong = pygame.mixer.Sound(os.path.join("sounds/wrong","filename"))
+    instructions = pygame.mixer.Sound(os.path.join("sounds/instructions",""))
+    instructions.play()
     
     # Event loop
     while not stop_event.isSet():
@@ -79,9 +92,12 @@ def main():
                     keypress = parse_key(event.key)
                     if keypress:
                         new_ltr = manage_keypress(keypress, random_ltr.char)
-                        if new_ltr:
+                        if new_ltr: # CORRECT
                             random_ltr.reset()
                             random_ltr = pick_random_char(random_ltr.char)
+                            right.play()
+                        else:
+                            wrong.play()
        
             # Do animations
             random_ltr.update() 
