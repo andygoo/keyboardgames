@@ -85,11 +85,11 @@ def main():
             s_right.append(pygame.mixer.Sound(
                     os.path.join(soundsdir,"right/"+fname)))
     for fname in os.listdir(os.path.join(soundsdir, "wrong")):
-        if fname.endswith(".wav"):
+        if fname.endswith(".ogg"):
             s_wrong.append(pygame.mixer.Sound(
                     os.path.join(soundsdir,"wrong/"+fname)))
     for fname in os.listdir(os.path.join(soundsdir, "instructions")):
-        if fname.endswith(".wav"):
+        if fname.endswith(".ogg"):
             s_instr.append(pygame.mixer.Sound(
                     os.path.join(soundsdir,"instructions/"+fname)))
 
