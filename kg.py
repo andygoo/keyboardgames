@@ -72,7 +72,7 @@ def main():
 
     # Start Music Playing
     pygame.mixer.music.load("bg.wav")
-    pygame.mixer.music.set_volume(0.5) # value: 0.0 - 1.0
+    pygame.mixer.music.set_volume(0.2) # value: 0.0 - 1.0
     pygame.mixer.music.play(-1)
 
     # Load sounds
